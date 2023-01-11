@@ -1,6 +1,6 @@
 namespace Breakfast.Models
 {
-
+    
     public class BreakfastModel
     {
         public Guid Id { get; }

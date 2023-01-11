@@ -18,7 +18,7 @@ namespace Breakfast.Controllers
         }
 
 
-        [HttpPost()]
+        [HttpPost]
         public IActionResult CreateBreakfast(CreateBreakfastRequest request)
         {
             
@@ -34,6 +34,7 @@ namespace Breakfast.Controllers
                 request.Sweet);
 
             // TODO: save breakfast to database
+            _breakfastService.CreateBreakfast(breakfast);
 
             var response = new BreakfastResponse(
                 breakfast.Id,
@@ -56,7 +57,19 @@ namespace Breakfast.Controllers
         [HttpGet("{id:guid}")]
         public IActionResult GetBreakfast(Guid id)
         {
-            return Ok(id);
+            BreakfastModel breakfast = _breakfastService.GetBreakfast(id);
+            var response = new BreakfastResponse(
+                breakfast.Id,
+                breakfast.Name,
+                breakfast.Description,
+                breakfast.StartDateTime,
+                breakfast.EndDateTime,
+                breakfast.LastModifiedDateTime,
+                breakfast.Savory,
+                breakfast.Sweet
+            );
+            
+            return Ok(response);
         }
 
         [HttpPut("{id:guid}")]
