@@ -1,0 +1,12 @@
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\Breakfast.Conctracts.csproj.AssemblyReference.cache
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\Breakfast.Conctracts.GeneratedMSBuildEditorConfig.editorconfig
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\Breakfast.Conctracts.AssemblyInfoInputs.cache
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\Breakfast.Conctracts.AssemblyInfo.cs
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\Breakfast.Conctracts.csproj.CoreCompileInputs.cache
+F:\dev2\BKapi2\Breakfast.Conctracts\bin\Debug\net6.0\Breakfast.Conctracts.deps.json
+F:\dev2\BKapi2\Breakfast.Conctracts\bin\Debug\net6.0\Breakfast.Conctracts.dll
+F:\dev2\BKapi2\Breakfast.Conctracts\bin\Debug\net6.0\Breakfast.Conctracts.pdb
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\Breakfast.Conctracts.dll
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\refint\Breakfast.Conctracts.dll
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\Breakfast.Conctracts.pdb
+F:\dev2\BKapi2\Breakfast.Conctracts\obj\Debug\net6.0\ref\Breakfast.Conctracts.dll
