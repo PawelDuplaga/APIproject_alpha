@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Breakfast.Conctracts.Breakfast
 {
     public record BreakfastResponse(
+      Guid Id,
       string Name,
       string Description,
       DateTime StartDateTime,

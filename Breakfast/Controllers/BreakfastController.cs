@@ -1,5 +1,7 @@
 ﻿using Breakfast.Conctracts.Breakfast;
 using Microsoft.AspNetCore.Mvc;
+using Breakfast.Models;
+using Breakfast.Services.Breakfast;
 
 namespace Breakfast.Controllers
 {
@@ -8,10 +10,47 @@ namespace Breakfast.Controllers
     public class BreakfastController : ControllerBase
     {
 
+        private readonly IBreakfastService _breakfastService;
+
+        public BreakfastController(IBreakfastService breakfastService)
+        {
+            _breakfastService = breakfastService;
+        }
+
+
         [HttpPost()]
         public IActionResult CreateBreakfast(CreateBreakfastRequest request)
         {
-            return Ok(request);
+            
+
+            var breakfast = new BreakfastModel(
+                Guid.NewGuid(),
+                request.Name,
+                request.Description,
+                request.StartDateTime,
+                request.EndDateTime,
+                DateTime.UtcNow,
+                request.Savory,
+                request.Sweet);
+
+            // TODO: save breakfast to database
+
+            var response = new BreakfastResponse(
+                breakfast.Id,
+                breakfast.Name,
+                breakfast.Description,
+                breakfast.StartDateTime,
+                breakfast.EndDateTime,
+                breakfast.LastModifiedDateTime,
+                breakfast.Savory,
+                breakfast.Sweet
+            );
+
+            return CreatedAtAction(
+                actionName: nameof(GetBreakfast),
+                routeValues : new { id = breakfast.Id},
+                value: response
+            );
         }
 
         [HttpGet("{id:guid}")]
