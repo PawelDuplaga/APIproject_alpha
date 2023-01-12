@@ -95,20 +95,18 @@ public class FireBaseService : IFireBaseService
 
     public async Task<Result> Delete(string collection_path, Guid data_id)
     {
-        FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
-
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
+        if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() == null)
         {
-            return Result.Success;
-        }
-        else if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
-        {
+            FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
             return Result.NotFound;
         }
-        else
+        else if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
         {
-            return Result.Error;
+            FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
+            return Result.Success;
         }
+        else return Result.Error;
     }
 
 

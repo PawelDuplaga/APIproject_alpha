@@ -18,7 +18,7 @@ public class BreakfastService : IBreakfastService
 
     public async Task<ErrorOr<Created>> CreateBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
-        var result = await _fireBaseService.Create(FIREBASE_BREAKFAST_COLLECTION_PATH,
+        var FirebaseResult = await _fireBaseService.Create(FIREBASE_BREAKFAST_COLLECTION_PATH,
                                                     breakfast_Id,
                                                     breakfastModel);
 
@@ -28,14 +28,14 @@ public class BreakfastService : IBreakfastService
 
     public async Task<ErrorOr<BreakfastModel>> GetBreakfast(Guid breakfast_Id)
     {
-        var (result, breakfastJSON) = await _fireBaseService.Read(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id);
+        var (FirebaseResult, breakfastJSON) = await _fireBaseService.Read(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id);
 
-        if(result == Result.Success)
+        if(FirebaseResult == FirebaseResult.Success)
         {
             BreakfastModel breakfastModel = JsonConvert.DeserializeObject<BreakfastModel>(breakfastJSON);
             return breakfastModel;
         }
-        if(result == Result.NotFound)
+        if(FirebaseResult == FirebaseResult.NotFound)
         {
             return Errors.Breakfast.NotFound;
         }
@@ -48,20 +48,26 @@ public class BreakfastService : IBreakfastService
     public async Task<ErrorOr<UpsertedBreakfast>> UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
         //TODO: when upserting new Id => create new Breakfast ?? 
-        var result = await _fireBaseService.Update(FIREBASE_BREAKFAST_COLLECTION_PATH,
+        FirebaseResult FirebaseResult = await _fireBaseService.Update(FIREBASE_BREAKFAST_COLLECTION_PATH,
                                                     breakfast_Id, 
                                                     breakfastModel);
-        bool isNewlyCreated(Result result) => result == Result.Success ? true : false;
+        bool isNewlyCreated(FirebaseResult FirebaseResult) => FirebaseResult == FirebaseResult.Success ? true : false;
 
-        return new UpsertedBreakfast(isNewlyCreated(result));
+        return new UpsertedBreakfast(isNewlyCreated(FirebaseResult));
         
     }
 
     public async Task<ErrorOr<Deleted>> DeleteBreakfast(Guid breakfast_id)
     {
-        var result = await _fireBaseService.Delete(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_id);
+        FirebaseResult FirebaseResult = await _fireBaseService.Delete(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_id);
 
-        return ErrorOr.Result.Deleted;
+        if(FirebaseResult == FirebaseResult.Success){
+            return ErrorOr.Result.Deleted;
+        }
+        if(FirebaseResult == FirebaseResult.NotFound){
+            return Errors.Breakfast.NotFound;
+        }
+        else return Errors.Breakfast.Unexpected;
     }
 }
 

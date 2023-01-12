@@ -1,4 +1,4 @@
-public enum Result 
+public enum FirebaseResult 
 {
 NotFound,
 Error,
