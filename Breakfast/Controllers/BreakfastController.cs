@@ -34,7 +34,7 @@ namespace Breakfast.Controllers
                 request.Sweet);
 
             // TODO: save breakfast to database
-            _breakfastService.CreateBreakfast(breakfast);
+            _breakfastService.CreateBreakfast(breakfast,breakfast.Id);
 
             var response = new BreakfastResponse(
                 breakfast.Id,
