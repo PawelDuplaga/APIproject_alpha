@@ -39,27 +39,18 @@ public class FireBaseService : IFireBaseService
 
     }
 
-    public void Create(string collection_path, Guid data_Id, Object data_obj)
+    public async Task<Result> Create(string collection_path, Guid data_Id, Object data_obj)
     {
-        try
+     
+        SetResponse response = await fclient.SetAsync(collection_path + data_Id, data_obj);
+
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            SetResponse setResponse = fclient.Set(collection_path + data_Id, data_obj);
-
-            Console.WriteLine(setResponse.Body);
-            if(setResponse.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                Console.WriteLine("OK");
-            }
-            else
-            {
-                Console.WriteLine("ERROR");
-            }
-
+            return Result.Success;
         }
-        catch (Exception ex)
+        else
         {
-
-                Console.WriteLine(ex.Message);
+            return Result.Error;
         }
     }
 
@@ -72,18 +63,44 @@ public class FireBaseService : IFireBaseService
         } 
         else
         {
-            return (Result.Succes, firebaseResponse.Body);
+            return (Result.Success, firebaseResponse.Body);
         }
     }
 
-    public void Update(string collection_path, Guid data_id, object data_obj)
+    public async Task<Result> Update(string collection_path, Guid data_id, object data_obj)
     {
-        SetResponse response = fclient.Set(collection_path + data_id, data_obj);
+        SetResponse response = await fclient.SetAsync(collection_path + data_id, data_obj);
+
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return Result.Success;
+        }
+        else if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return Result.NotFound;
+        }
+        else
+        {
+            return Result.Error;
+        }
     }
 
-    public void Delete(string collection_path, Guid data_id)
+    public async Task<Result> Delete(string collection_path, Guid data_id)
     {
-        FirebaseResponse response = fclient.Delete(collection_path + data_id);
+        FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
+
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return Result.Success;
+        }
+        else if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return Result.NotFound;
+        }
+        else
+        {
+            return Result.Error;
+        }
     }
 
 
@@ -98,3 +115,5 @@ SetResponse is a subclass of FirebaseResponse that is specific to the "set" oper
 It contains additional information such as the unique key of the newly-written data and the priority of the data.
 In general, you would use FirebaseResponse when you want to handle the response from any type of Firebase Realtime Database operation, 
 and SetResponse when you specifically want to handle the response from a "set" operation. */
+
+// Later we could implement handling of all type of Errors, for now its enough

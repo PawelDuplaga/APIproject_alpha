@@ -1,1 +1,6 @@
-public enum Result {NotFound,Succes};
+public enum Result 
+{
+NotFound,
+Error,
+Success
+};
