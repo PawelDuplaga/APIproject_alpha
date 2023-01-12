@@ -2,14 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Breakfast.Models;
 using Breakfast.Services.Breakfast;
-using Breakfast.ServiceErrors;
+using Breakfast.Controllers;
 using ErrorOr;
 
 namespace Breakfast.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class BreakfastController : ControllerBase
+    
+    public class BreakfastController : ApiController
     {
 
         private readonly IBreakfastService _breakfastService;
@@ -21,7 +20,7 @@ namespace Breakfast.Controllers
 
 
         [HttpPost]
-        public IActionResult CreateBreakfast(CreateBreakfastRequest request)
+        public async Task<IActionResult> CreateBreakfast(CreateBreakfastRequest request)
         {
             
             //Could first use _breakfastService to save data to Firebase db to get the key of the new written
@@ -38,40 +37,46 @@ namespace Breakfast.Controllers
                 request.Sweet);
 
             // TODO: save breakfast to database
-            _breakfastService.CreateBreakfast(breakfast.Id, breakfast);
-
-            var response = new BreakfastResponse(
-                breakfast.Id,
-                breakfast.Name,
-                breakfast.Description,
-                breakfast.StartDateTime,
-                breakfast.EndDateTime,
-                breakfast.LastModifiedDateTime,
-                breakfast.Savory,
-                breakfast.Sweet
-            );
+            ErrorOr<Created> CreateBreakfastResult =  await _breakfastService.CreateBreakfast(breakfast.Id, breakfast);
+            if(CreateBreakfastResult.IsError)
+            {
+                return Problem(CreateBreakfastResult.Errors);
+            }
 
             return CreatedAtAction(
                 actionName: nameof(GetBreakfast),
                 routeValues : new { id = breakfast.Id},
-                value: response
+                value: MapBreakfastResponse(breakfast)
             );
         }
+
+        
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetBreakfast(Guid id)
         {
             ErrorOr<BreakfastModel> getBreakfastResult = await _breakfastService.GetBreakfast(id);
 
-            if(getBreakfastResult.IsError && 
-               getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
-            {
-                return NotFound();
-            }
+            return getBreakfastResult.Match(
+                breakfast => Ok(MapBreakfastResponse(breakfast)),
+                errors => Problem(errors));
+
+
+            // if(getBreakfastResult.IsError && 
+            //    getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
+            // {
+            //     return NotFound();
+            // }
             
-            var breakfast = getBreakfastResult.Value;
+            // var breakfast = getBreakfastResult.Value;
+            // BreakfastResponse response = MapBreakfastResponse(breakfast);
             
-            var response = new BreakfastResponse(
+            // return Ok(response);
+        }
+
+        public static BreakfastResponse MapBreakfastResponse(BreakfastModel breakfast)
+        {
+            return new BreakfastResponse(
                 breakfast.Id,
                 breakfast.Name,
                 breakfast.Description,
@@ -81,12 +86,10 @@ namespace Breakfast.Controllers
                 breakfast.Savory,
                 breakfast.Sweet
             );
-            
-            return Ok(response);
         }
 
         [HttpPut("{id:guid}")]
-        public IActionResult UpdateBreakfast(Guid Id, UpsertBreakfastRequest request)
+        public async Task<IActionResult> UpsertBreakfast(Guid Id, UpsertBreakfastRequest request)
         {
 
             var breakfast = new BreakfastModel(
@@ -99,16 +102,19 @@ namespace Breakfast.Controllers
                 request.Savory,
                 request.Sweet);
 
-            _breakfastService.UpsertBreakfast(breakfast.Id, breakfast);
+            ErrorOr<Updated> upsertedResult = await _breakfastService.UpsertBreakfast(breakfast.Id, breakfast);
 
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
-        public IActionResult DeleteBreakfast(Guid id)
+        public async Task<IActionResult> DeleteBreakfast(Guid id)
         {
-            _breakfastService.DeleteBreakfast(id);
-            return NoContent();
+            ErrorOr<Deleted> deletedResult = await _breakfastService.DeleteBreakfast(id);
+            return deletedResult.Match(
+                deleted => NoContent(),
+                errors => Problem(errors)
+            );
         }
 
     }

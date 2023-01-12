@@ -6,7 +6,7 @@ using FireSharp.Interfaces;
 using Breakfast.Models;
 
 
-namespace Breakfast.Services.Breakfast;
+namespace Breakfast.Services.Firebase;
 
 public class FireBaseService : IFireBaseService
 {
@@ -54,22 +54,31 @@ public class FireBaseService : IFireBaseService
         }
     }
 
-    public async Task<(Result,string)> Read(string collection_path, Guid data_Id)
+    public async Task<(Result,string?)> Read(string collection_path, Guid data_Id)
     {
         FirebaseResponse firebaseResponse = await fclient.GetAsync(collection_path + data_Id);
-        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+        Console.WriteLine(firebaseResponse.StatusCode + "__________________________________________________________");
+        Console.WriteLine(firebaseResponse.Body + "     00000000000000000000000000000000000000000000000000000000000");
+        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK &&
+           firebaseResponse.ResultAs<Object>() == null)
         {
-            return (Result.NotFound,"404 Not Found");
+            return (Result.NotFound, null);
         } 
+        else if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("########################################### SUCCES");
+            return (Result.Success, firebaseResponse.Body);
+        }
         else
         {
-            return (Result.Success, firebaseResponse.Body);
+            Console.WriteLine("########################################### FAIL");
+            return (Result.Error, null);
         }
     }
 
     public async Task<Result> Update(string collection_path, Guid data_id, object data_obj)
     {
-        SetResponse response = await fclient.SetAsync(collection_path + data_id, data_obj);
+        FirebaseResponse response = await fclient.UpdateAsync(collection_path + data_id, data_obj);
 
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {

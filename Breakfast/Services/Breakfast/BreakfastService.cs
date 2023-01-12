@@ -1,6 +1,7 @@
 using Breakfast.Models;
 using Newtonsoft.Json;
 using Breakfast.ServiceErrors;
+using Breakfast.Services.Firebase;
 using ErrorOr;
 
 namespace Breakfast.Services.Breakfast;
@@ -15,14 +16,13 @@ public class BreakfastService : IBreakfastService
         _fireBaseService = new FireBaseService();
     }
 
-    public async Task CreateBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
+    public async Task<ErrorOr<Created>> CreateBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
         var result = await _fireBaseService.Create(FIREBASE_BREAKFAST_COLLECTION_PATH,
                                                     breakfast_Id,
                                                     breakfastModel);
 
-        if(result == Result.Success) return;
-        else return;
+        return ErrorOr.Result.Created;
         
     }
 
@@ -45,16 +45,21 @@ public class BreakfastService : IBreakfastService
         }
     }
 
-    public async Task UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
+    public async Task<ErrorOr<Updated>> UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
         var result = await _fireBaseService.Update(FIREBASE_BREAKFAST_COLLECTION_PATH,
                                                     breakfast_Id, 
                                                     breakfastModel);
+
+        return ErrorOr.Result.Updated;
+        
     }
 
-    public async Task DeleteBreakfast(Guid breakfast_id)
+    public async Task<ErrorOr<Deleted>> DeleteBreakfast(Guid breakfast_id)
     {
         var result = await _fireBaseService.Delete(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_id);
+
+        return ErrorOr.Result.Deleted;
     }
 }
 
