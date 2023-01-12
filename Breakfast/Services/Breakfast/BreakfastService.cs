@@ -1,5 +1,6 @@
 using Breakfast.Models;
 using Newtonsoft.Json;
+using Breakfast.ServiceErrors;
 using ErrorOr;
 
 namespace Breakfast.Services.Breakfast;
@@ -14,28 +15,46 @@ public class BreakfastService : IBreakfastService
         _fireBaseService = new FireBaseService();
     }
 
-    public void CreateBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
+    public async Task CreateBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
-        _fireBaseService.Create(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id, breakfastModel);
+        var result = await _fireBaseService.Create(FIREBASE_BREAKFAST_COLLECTION_PATH,
+                                                    breakfast_Id,
+                                                    breakfastModel);
+
+        if(result == Result.Success) return;
+        else return;
+        
     }
 
-    public ErrorOr<BreakfastModel> GetBreakfast(Guid breakfast_Id)
+    public async Task<ErrorOr<BreakfastModel>> GetBreakfast(Guid breakfast_Id)
     {
-        var breakfastJSON = _fireBaseService.Read(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id);
-        Console.WriteLine(breakfastJSON);
-        BreakfastModel breakfastModel = JsonConvert.DeserializeObject<BreakfastModel>(breakfastJSON);
+        var (result, breakfastJSON) = await _fireBaseService.Read(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id);
 
-        return breakfastModel;
+        if(result == Result.Success)
+        {
+            BreakfastModel breakfastModel = JsonConvert.DeserializeObject<BreakfastModel>(breakfastJSON);
+            return breakfastModel;
+        }
+        if(result == Result.NotFound)
+        {
+            return Errors.Breakfast.NotFound;
+        }
+        else
+        {
+            return Errors.Breakfast.Unexpected;
+        }
     }
 
-    public void UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
+    public async Task UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
-        _fireBaseService.Update(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id, breakfastModel);
+        var result = await _fireBaseService.Update(FIREBASE_BREAKFAST_COLLECTION_PATH,
+                                                    breakfast_Id, 
+                                                    breakfastModel);
     }
 
-    public void DeleteBreakfast(Guid breakfast_id)
+    public async Task DeleteBreakfast(Guid breakfast_id)
     {
-        _fireBaseService.Delete(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_id);
+        var result = await _fireBaseService.Delete(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_id);
     }
 }
 

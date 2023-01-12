@@ -59,9 +59,9 @@ namespace Breakfast.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public IActionResult GetBreakfast(Guid id)
+        public async Task<IActionResult> GetBreakfast(Guid id)
         {
-            ErrorOr<BreakfastModel> getBreakfastResult = _breakfastService.GetBreakfast(id);
+            ErrorOr<BreakfastModel> getBreakfastResult = await _breakfastService.GetBreakfast(id);
 
             if(getBreakfastResult.IsError && 
                getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
