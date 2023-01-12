@@ -63,10 +63,17 @@ public class FireBaseService : IFireBaseService
         }
     }
 
-    public string Read(string collection_path, Guid data_Id)
+    public async Task<(Result,string)> Read(string collection_path, Guid data_Id)
     {
-        FirebaseResponse firebaseResponse = fclient.Get(collection_path + data_Id);
-        return firebaseResponse.Body;
+        FirebaseResponse firebaseResponse = await fclient.GetAsync(collection_path + data_Id);
+        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return (Result.NotFound,"404 Not Found");
+        } 
+        else
+        {
+            return (Result.Succes, firebaseResponse.Body);
+        }
     }
 
     public void Update(string collection_path, Guid data_id, object data_obj)

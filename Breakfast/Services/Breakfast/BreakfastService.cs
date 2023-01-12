@@ -1,5 +1,6 @@
 using Breakfast.Models;
 using Newtonsoft.Json;
+using ErrorOr;
 
 namespace Breakfast.Services.Breakfast;
 
@@ -18,9 +19,10 @@ public class BreakfastService : IBreakfastService
         _fireBaseService.Create(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id, breakfastModel);
     }
 
-    public BreakfastModel GetBreakfast(Guid breakfast_Id)
+    public ErrorOr<BreakfastModel> GetBreakfast(Guid breakfast_Id)
     {
         var breakfastJSON = _fireBaseService.Read(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id);
+        Console.WriteLine(breakfastJSON);
         BreakfastModel breakfastModel = JsonConvert.DeserializeObject<BreakfastModel>(breakfastJSON);
 
         return breakfastModel;

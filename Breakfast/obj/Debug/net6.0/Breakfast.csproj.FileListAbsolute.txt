@@ -61,3 +61,4 @@ F:\dev2\BKapi2\Breakfast\bin\Debug\net6.0\Microsoft.Threading.Tasks.dll
 F:\dev2\BKapi2\Breakfast\bin\Debug\net6.0\System.Net.Http.Extensions.dll
 F:\dev2\BKapi2\Breakfast\bin\Debug\net6.0\System.Net.Http.Primitives.dll
 F:\dev2\BKapi2\Breakfast\bin\Debug\net6.0\Configs\UserConfig.json
+F:\dev2\BKapi2\Breakfast\bin\Debug\net6.0\ErrorOr.dll

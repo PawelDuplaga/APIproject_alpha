@@ -2,6 +2,19 @@
   "version": 3,
   "targets": {
     "net6.0": {
+      "ErrorOr/1.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/ErrorOr.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ErrorOr.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "FireSharp/2.0.4": {
         "type": "package",
         "dependencies": {
@@ -1760,6 +1773,22 @@
     }
   },
   "libraries": {
+    "ErrorOr/1.2.1": {
+      "sha512": "5xcbQErEPQKq2z/sLwSaFPX3T2G7x4ISX0us0X7jSxXSQT/wlfOOhw4knPUN/GWOf2strhuzdvRA36JViwvu+A==",
+      "type": "package",
+      "path": "erroror/1.2.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "erroror.1.2.1.nupkg.sha512",
+        "erroror.nuspec",
+        "icon-square.png",
+        "lib/net6.0/ErrorOr.dll",
+        "lib/net6.0/ErrorOr.xml",
+        "lib/netstandard2.0/ErrorOr.dll",
+        "lib/netstandard2.0/ErrorOr.xml"
+      ]
+    },
     "FireSharp/2.0.4": {
       "sha512": "laSHpVUBG6iCTUixmpeUmYxie2zbziOBM+LU0v2A0ETE9dUyBA+8aY63xql/o8LXj+kFybBLYUKBUrLCZWaq+A==",
       "type": "package",
@@ -5794,6 +5823,7 @@
   "projectFileDependencyGroups": {
     "net6.0": [
       "Breakfast.Conctracts >= 1.0.0",
+      "ErrorOr >= 1.2.1",
       "FireSharp >= 2.0.4",
       "Google.Cloud.Firestore >= 1.1.0-beta01",
       "Newtonsoft.Json >= 13.0.2",
@@ -5843,6 +5873,10 @@
       "net6.0": {
         "targetAlias": "net6.0",
         "dependencies": {
+          "ErrorOr": {
+            "target": "Package",
+            "version": "[1.2.1, )"
+          },
           "FireSharp": {
             "target": "Package",
             "version": "[2.0.4, )"

@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "B6H9hywO1gl1WbM1mLFhWj/XWq1+gQOCseX3gELZz6LskuISUv5q7jReFmF+0IwX3E6YeaikIhs0PWVQWZqmhQ==",
+  "dgSpecHash": "v0uU3N0JcvycoFDkpf3mdpHGbziOAFSZTZC0brxxkepd11OxBgjwy5cYJjxusPXvrdQjsuTHKuwaz5kAUo0U6w==",
   "success": true,
   "projectFilePath": "F:\\dev2\\BKapi2\\Breakfast\\Breakfast.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\erroror\\1.2.1\\erroror.1.2.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\firesharp\\2.0.4\\firesharp.2.0.4.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\google.api.commonprotos\\1.7.0\\google.api.commonprotos.1.7.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\google.api.gax\\2.9.0\\google.api.gax.2.9.0.nupkg.sha512",

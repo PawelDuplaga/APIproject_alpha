@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Breakfast.Models;
 using Breakfast.Services.Breakfast;
+using Breakfast.ServiceErrors;
+using ErrorOr;
 
 namespace Breakfast.Controllers
 {
@@ -59,8 +61,16 @@ namespace Breakfast.Controllers
         [HttpGet("{id:guid}")]
         public IActionResult GetBreakfast(Guid id)
         {
-            BreakfastModel breakfast = _breakfastService.GetBreakfast(id);
+            ErrorOr<BreakfastModel> getBreakfastResult = _breakfastService.GetBreakfast(id);
 
+            if(getBreakfastResult.IsError && 
+               getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
+            {
+                return NotFound();
+            }
+            
+            var breakfast = getBreakfastResult.Value;
+            
             var response = new BreakfastResponse(
                 breakfast.Id,
                 breakfast.Name,
@@ -90,7 +100,7 @@ namespace Breakfast.Controllers
                 request.Sweet);
 
             _breakfastService.UpsertBreakfast(breakfast.Id, breakfast);
-            
+
             return NoContent();
         }
 

@@ -1,0 +1,1 @@
+public enum Result {NotFound,Succes};
