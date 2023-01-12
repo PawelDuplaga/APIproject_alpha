@@ -1,14 +1,11 @@
 using Breakfast.Models;
-using FireSharp.Config;
-using FireSharp.Response;
-using FireSharp.Interfaces;
-
+using Newtonsoft.Json;
 
 namespace Breakfast.Services.Breakfast;
 
 public class BreakfastService : IBreakfastService
 {
-    FireBaseService fireBaseService;
+    IFireBaseService fireBaseService;
     private static readonly Dictionary<Guid,BreakfastModel> _breakfasts = new Dictionary<Guid, BreakfastModel>();
 
     public BreakfastService()
@@ -16,17 +13,29 @@ public class BreakfastService : IBreakfastService
         fireBaseService = new FireBaseService();
     }
 
-    public void CreateBreakfast(BreakfastModel breakfastModel, Guid breakfast_id)
+    public void CreateBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
-        _breakfasts.Add(breakfastModel.Id,breakfastModel);
-        fireBaseService.Create("Breakfast/",breakfastModel,breakfast_id);
+        fireBaseService.Create("Breakfast/", breakfast_Id, breakfastModel);
     }
 
-
-    public BreakfastModel GetBreakfast(Guid id)
+    public BreakfastModel GetBreakfast(Guid breakfast_Id)
     {
-        return _breakfasts[id];
+        var breakfastJSON = fireBaseService.Read("Breakfast/", breakfast_Id);
+        BreakfastModel breakfastModel = JsonConvert.DeserializeObject<BreakfastModel>(breakfastJSON);
+
+        return breakfastModel;
+    }
+
+    public void UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
+    {
+        
+    }
+
+    public void DeleteBreakfast(Guid breakfast_id)
+    {
+        throw new NotImplementedException();
     }
 }
+
 
 

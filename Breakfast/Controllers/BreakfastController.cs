@@ -22,6 +22,8 @@ namespace Breakfast.Controllers
         public IActionResult CreateBreakfast(CreateBreakfastRequest request)
         {
             
+            //Could first use _breakfastService to save data to Firebase db to get the key of the new written
+            //data in response from db and then attached it to API response
 
             var breakfast = new BreakfastModel(
                 Guid.NewGuid(),
@@ -58,6 +60,7 @@ namespace Breakfast.Controllers
         public IActionResult GetBreakfast(Guid id)
         {
             BreakfastModel breakfast = _breakfastService.GetBreakfast(id);
+
             var response = new BreakfastResponse(
                 breakfast.Id,
                 breakfast.Name,
@@ -73,8 +76,19 @@ namespace Breakfast.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        public IActionResult UpdateBreakfast(Guid id, UpsertBreakfastRequest request)
+        public IActionResult UpdateBreakfast(Guid Id, UpsertBreakfastRequest request)
         {
+
+            var breakfast = new BreakfastModel(
+                Id,
+                request.Name,
+                request.Description,
+                request.StartDateTime,
+                request.EndDateTime,
+                DateTime.UtcNow,
+                request.Savory,
+                request.Sweet);
+
             return Ok(request);
         }
 
