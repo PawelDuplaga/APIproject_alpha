@@ -41,13 +41,11 @@ public class FireBaseService : IFireBaseService
 
     public void Create(string collection_path, Guid data_Id, Object data_obj)
     {
-
-        
-
         try
         {
             SetResponse setResponse = fclient.Set(collection_path + data_Id, data_obj);
 
+            Console.WriteLine(setResponse.Body);
             if(setResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 Console.WriteLine("OK");
@@ -65,49 +63,24 @@ public class FireBaseService : IFireBaseService
         }
     }
 
-    public void Delete(string collection_path, Guid data_id)
-    {
-        throw new NotImplementedException();
-    }
-
     public string Read(string collection_path, Guid data_Id)
     {
-        // FirebaseResponse firebaseResponse;
-
-        // try
-        // {
-        //     firebaseResponse = fclient.Get(collection_path + data_Id);
-
-        //     if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK)
-        //     {
-        //         Console.WriteLine("OK");
-        //         return firebaseResponse.Body;
-        //     }
-        //     else
-        //     {
-        //         Console.WriteLine("ERROR");
-        //         return firebaseResponse.Body;
-               
-        //     }
-
-        // }
-        // catch (Exception ex)
-        // {
-
-        //         Console.WriteLine(ex.Message);
-        // }
-
-        // return null;
-
         FirebaseResponse firebaseResponse = fclient.Get(collection_path + data_Id);
         return firebaseResponse.Body;
-
     }
 
     public void Update(string collection_path, Guid data_id, object data_obj)
     {
-        throw new NotImplementedException();
+        SetResponse response = fclient.Set(collection_path + data_id, data_obj);
     }
+
+    public void Delete(string collection_path, Guid data_id)
+    {
+        FirebaseResponse response = fclient.Delete(collection_path + data_id);
+    }
+
+
+    
 }
 
 

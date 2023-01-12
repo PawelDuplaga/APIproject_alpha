@@ -36,7 +36,7 @@ namespace Breakfast.Controllers
                 request.Sweet);
 
             // TODO: save breakfast to database
-            _breakfastService.CreateBreakfast(breakfast,breakfast.Id);
+            _breakfastService.CreateBreakfast(breakfast.Id, breakfast);
 
             var response = new BreakfastResponse(
                 breakfast.Id,
@@ -89,13 +89,16 @@ namespace Breakfast.Controllers
                 request.Savory,
                 request.Sweet);
 
-            return Ok(request);
+            _breakfastService.UpsertBreakfast(breakfast.Id, breakfast);
+            
+            return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public IActionResult DeleteBreakfast(Guid id)
         {
-            return Ok(id);
+            _breakfastService.DeleteBreakfast(id);
+            return NoContent();
         }
 
     }
