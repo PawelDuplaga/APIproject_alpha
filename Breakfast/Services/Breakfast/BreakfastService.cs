@@ -45,13 +45,15 @@ public class BreakfastService : IBreakfastService
         }
     }
 
-    public async Task<ErrorOr<Updated>> UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
+    public async Task<ErrorOr<UpsertedBreakfast>> UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
+        //TODO: when upserting new Id => create new Breakfast ?? 
         var result = await _fireBaseService.Update(FIREBASE_BREAKFAST_COLLECTION_PATH,
                                                     breakfast_Id, 
                                                     breakfastModel);
+        bool isNewlyCreated(Result result) => result == Result.Success ? true : false;
 
-        return ErrorOr.Result.Updated;
+        return new UpsertedBreakfast(isNewlyCreated(result));
         
     }
 

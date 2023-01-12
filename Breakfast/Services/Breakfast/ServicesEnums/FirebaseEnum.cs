@@ -2,5 +2,6 @@ public enum Result
 {
 NotFound,
 Error,
-Success
+Success,
+Updated
 };

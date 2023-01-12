@@ -36,7 +36,6 @@ namespace Breakfast.Controllers
                 request.Savory,
                 request.Sweet);
 
-            // TODO: save breakfast to database
             ErrorOr<Created> CreateBreakfastResult =  await _breakfastService.CreateBreakfast(breakfast.Id, breakfast);
             if(CreateBreakfastResult.IsError)
             {
@@ -61,31 +60,6 @@ namespace Breakfast.Controllers
                 breakfast => Ok(MapBreakfastResponse(breakfast)),
                 errors => Problem(errors));
 
-
-            // if(getBreakfastResult.IsError && 
-            //    getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
-            // {
-            //     return NotFound();
-            // }
-            
-            // var breakfast = getBreakfastResult.Value;
-            // BreakfastResponse response = MapBreakfastResponse(breakfast);
-            
-            // return Ok(response);
-        }
-
-        public static BreakfastResponse MapBreakfastResponse(BreakfastModel breakfast)
-        {
-            return new BreakfastResponse(
-                breakfast.Id,
-                breakfast.Name,
-                breakfast.Description,
-                breakfast.StartDateTime,
-                breakfast.EndDateTime,
-                breakfast.LastModifiedDateTime,
-                breakfast.Savory,
-                breakfast.Sweet
-            );
         }
 
         [HttpPut("{id:guid}")]
@@ -114,6 +88,20 @@ namespace Breakfast.Controllers
             return deletedResult.Match(
                 deleted => NoContent(),
                 errors => Problem(errors)
+            );
+        }
+
+           public static BreakfastResponse MapBreakfastResponse(BreakfastModel breakfast)
+        {
+            return new BreakfastResponse(
+                breakfast.Id,
+                breakfast.Name,
+                breakfast.Description,
+                breakfast.StartDateTime,
+                breakfast.EndDateTime,
+                breakfast.LastModifiedDateTime,
+                breakfast.Savory,
+                breakfast.Sweet
             );
         }
 
