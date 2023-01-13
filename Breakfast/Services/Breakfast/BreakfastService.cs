@@ -3,13 +3,13 @@ using Newtonsoft.Json;
 using Breakfast.ServiceErrors;
 using Breakfast.Services.Firebase;
 using ErrorOr;
+using Breakfast.Utils;
 
 namespace Breakfast.Services.Breakfast;
 
 public class BreakfastService : IBreakfastService
 {
     private IFireBaseService _fireBaseService;
-    private static readonly string FIREBASE_BREAKFAST_COLLECTION_PATH = "Breakfast/";
 
     public BreakfastService()
     {
@@ -18,9 +18,11 @@ public class BreakfastService : IBreakfastService
 
     public async Task<ErrorOr<Created>> CreateBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
-        var FirebaseResult = await _fireBaseService.Create(FIREBASE_BREAKFAST_COLLECTION_PATH,
-                                                    breakfast_Id,
-                                                    breakfastModel);
+        var FirebaseResult = await _fireBaseService.Create(
+            ApiBreakfastConstants.FIREBASE_BREAKFAST_COLLECTION_DB_PATH,
+            breakfast_Id,
+            breakfastModel
+            );
 
         return ErrorOr.Result.Created;
         
@@ -28,7 +30,10 @@ public class BreakfastService : IBreakfastService
 
     public async Task<ErrorOr<BreakfastModel>> GetBreakfast(Guid breakfast_Id)
     {
-        var (FirebaseResult, breakfastJSON) = await _fireBaseService.Read(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_Id);
+        var (FirebaseResult, breakfastJSON) = await _fireBaseService.Read(
+            ApiBreakfastConstants.FIREBASE_BREAKFAST_COLLECTION_DB_PATH, 
+            breakfast_Id
+            );
 
         if(FirebaseResult == FirebaseResult.Success)
         {
@@ -47,10 +52,12 @@ public class BreakfastService : IBreakfastService
 
     public async Task<ErrorOr<UpsertedBreakfast>> UpsertBreakfast(Guid breakfast_Id, BreakfastModel breakfastModel)
     {
-        //TODO: when upserting new Id => create new Breakfast ?? 
-        FirebaseResult FirebaseResult = await _fireBaseService.Update(FIREBASE_BREAKFAST_COLLECTION_PATH,
-                                                    breakfast_Id, 
-                                                    breakfastModel);
+        FirebaseResult FirebaseResult = await _fireBaseService.Update(
+            ApiBreakfastConstants.FIREBASE_BREAKFAST_COLLECTION_DB_PATH,
+            breakfast_Id, 
+            breakfastModel
+            );
+
         bool isNewlyCreated(FirebaseResult FirebaseResult) => FirebaseResult == FirebaseResult.Success ? true : false;
 
         return new UpsertedBreakfast(isNewlyCreated(FirebaseResult));
@@ -59,7 +66,10 @@ public class BreakfastService : IBreakfastService
 
     public async Task<ErrorOr<Deleted>> DeleteBreakfast(Guid breakfast_id)
     {
-        FirebaseResult FirebaseResult = await _fireBaseService.Delete(FIREBASE_BREAKFAST_COLLECTION_PATH, breakfast_id);
+        FirebaseResult FirebaseResult = await _fireBaseService.Delete(
+            ApiBreakfastConstants.FIREBASE_BREAKFAST_COLLECTION_DB_PATH, 
+            breakfast_id
+            );
 
         if(FirebaseResult == FirebaseResult.Success){
             return ErrorOr.Result.Deleted;

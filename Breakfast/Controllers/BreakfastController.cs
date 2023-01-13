@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Breakfast.Models;
 using Breakfast.Services.Breakfast;
+using Breakfast.ServiceErrors;
 using Breakfast.Controllers;
 using ErrorOr;
 
@@ -22,6 +23,7 @@ namespace Breakfast.Controllers
         {           
             //Could first use _breakfastService to save data to Firebase db to get the key of the new written
             //data in response from db and then attached it to API response
+
             var breakfast = new BreakfastModel(
                 Guid.NewGuid(),
                 request.Name,
@@ -40,22 +42,29 @@ namespace Breakfast.Controllers
             );
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetBreakfast(Guid id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBreakfast(string Id)
         {
-            ErrorOr<BreakfastModel> getBreakfastResult = await _breakfastService.GetBreakfast(id);
+            if(!Guid.TryParse(Id, out var GuidID)){
+                return Problem(new List<Error>{Errors.Syntax.GuidBadSyntax});
+            }
 
+            ErrorOr<BreakfastModel> getBreakfastResult = await _breakfastService.GetBreakfast(GuidID);
             return getBreakfastResult.Match(
                 breakfast => Ok(MapBreakfastResponse(breakfast)),
                 errors => Problem(errors));
 
         }
 
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpsertBreakfast(Guid Id, UpsertBreakfastRequest request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpsertBreakfast(string Id, UpsertBreakfastRequest request)
         {
+            if(!Guid.TryParse(Id, out var GuidID)){
+                return Problem(new List<Error>{Errors.Syntax.GuidBadSyntax});
+            }
+
             var breakfast = new BreakfastModel(
-                Id,
+                GuidID,
                 request.Name,
                 request.Description,
                 request.StartDateTime,
@@ -72,10 +81,14 @@ namespace Breakfast.Controllers
             );
         }
 
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteBreakfast(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBreakfast(string Id)
         {
-            ErrorOr<Deleted> deleteBreakfastResult = await _breakfastService.DeleteBreakfast(id);
+            if(!Guid.TryParse(Id, out var GuidID)){
+                return Problem(new List<Error>{Errors.Syntax.GuidBadSyntax});
+            }
+
+            ErrorOr<Deleted> deleteBreakfastResult = await _breakfastService.DeleteBreakfast(GuidID);
             return deleteBreakfastResult.Match(
                 deleted => NoContent(),
                 errors => Problem(errors)
@@ -98,7 +111,7 @@ namespace Breakfast.Controllers
 
         private CreatedAtActionResult CreatedAsGetBreakfast(BreakfastModel breakfast)
         {
-             return CreatedAtAction(
+            return CreatedAtAction(
                 actionName: nameof(GetBreakfast),
                 routeValues : new { id = breakfast.Id},
                 value: MapBreakfastResponse(breakfast)

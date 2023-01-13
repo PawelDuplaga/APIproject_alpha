@@ -1,30 +1,27 @@
+using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Breakfast.Configs;
 using FireSharp.Config;
 using FireSharp.Response;
 using FireSharp.Interfaces;
 using Breakfast.Models;
-
+using Breakfast.Utils;
 
 namespace Breakfast.Services.Firebase;
 
 public class FireBaseService : IFireBaseService
 {
-
     IFirebaseConfig fconfig;
     IFirebaseClient fclient;
-
 
     public FireBaseService()
     {
         ConnectToDatabase();
     }
     
-
-
     private void ConnectToDatabase()
     {
-        string json = File.ReadAllText(@"Configs/UserConfig.json");
+        string json = File.ReadAllText(ApiBreakfastConstants.FIREBASE_CONFIG_FILE_PATH);
         UserConfig config = JsonConvert.DeserializeObject<UserConfig>(json);
 
         fconfig = new FirebaseConfig
@@ -34,83 +31,70 @@ public class FireBaseService : IFireBaseService
         };
 
         fclient = new FireSharp.FirebaseClient(fconfig);
-        Console.WriteLine(config.AuthSecret);
-        Console.WriteLine(config.FirebasePath);
-
     }
 
-    public async Task<Result> Create(string collection_path, Guid data_Id, Object data_obj)
+    public async Task<FirebaseResult> Create(string collection_path, Guid data_Id, Object data_obj)
     {
-     
         SetResponse response = await fclient.SetAsync(collection_path + data_Id, data_obj);
 
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            return Result.Success;
+            return FirebaseResult.Success;
         }
-        else
-        {
-            return Result.Error;
-        }
+
+        return FirebaseResult.Error;    
     }
 
-    public async Task<(Result,string?)> Read(string collection_path, Guid data_Id)
+    public async Task<(FirebaseResult,string?)> Read(string collection_path, Guid data_Id)
     {
         FirebaseResponse firebaseResponse = await fclient.GetAsync(collection_path + data_Id);
-        Console.WriteLine(firebaseResponse.StatusCode + "__________________________________________________________");
-        Console.WriteLine(firebaseResponse.Body + "     00000000000000000000000000000000000000000000000000000000000");
-        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK &&
-           firebaseResponse.ResultAs<Object>() == null)
+
+        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() != null)
         {
-            return (Result.NotFound, null);
+            return (FirebaseResult.Success, firebaseResponse.Body);
+        }
+        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() == null)
+        {
+            return (FirebaseResult.NotFound, null);
         } 
-        else if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("########################################### SUCCES");
-            return (Result.Success, firebaseResponse.Body);
-        }
-        else
-        {
-            Console.WriteLine("########################################### FAIL");
-            return (Result.Error, null);
-        }
+
+        return (FirebaseResult.Error, null);
     }
 
-    public async Task<Result> Update(string collection_path, Guid data_id, object data_obj)
+    public async Task<FirebaseResult> Update(string collection_path, Guid data_id, Object data_obj)
     {
         FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() == null)
         {
             FirebaseResponse response = await fclient.UpdateAsync(collection_path + data_id, data_obj);
-            return Result.Success;
+            return FirebaseResult.Success;
         }
-        else if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
+        if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
         {
             FirebaseResponse response = await fclient.UpdateAsync(collection_path + data_id, data_obj);
-            return Result.Updated;
+            return FirebaseResult.Updated;
         }
-        else return Result.Error;
+        
+        return FirebaseResult.Error;
 
     }
 
-    public async Task<Result> Delete(string collection_path, Guid data_id)
+    public async Task<FirebaseResult> Delete(string collection_path, Guid data_id)
     {
         FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
+        if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
+        {
+            FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
+            return FirebaseResult.Success;
+        }
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() == null)
         {
             FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
-            return Result.NotFound;
+            return FirebaseResult.NotFound;
         }
-        else if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
-        {
-            FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
-            return Result.Success;
-        }
-        else return Result.Error;
+
+        return FirebaseResult.Error;
     }
-
-
-    
 }
 
 

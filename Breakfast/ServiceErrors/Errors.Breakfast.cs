@@ -5,6 +5,15 @@ namespace Breakfast.ServiceErrors;
 public static class Errors
 {
 
+    public static class Syntax
+    {
+        public static Error GuidBadSyntax => Error.Validation(
+            code: "Guid.BadSyntax",
+            description: "Given id have wrong syntax"
+        );
+    }
+
+
     public static class Breakfast
     {
         public static Error NotFound => Error.NotFound(
