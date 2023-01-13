@@ -1,10 +1,8 @@
-using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Breakfast.Configs;
 using FireSharp.Config;
 using FireSharp.Response;
 using FireSharp.Interfaces;
-using Breakfast.Models;
 using Breakfast.Utils;
 
 namespace Breakfast.Services.Firebase;
