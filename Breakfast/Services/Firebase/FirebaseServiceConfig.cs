@@ -2,7 +2,7 @@ using System.Xml.Serialization;
 
 namespace Breakfast.Services.Firebase;
 
-[XmlRoot("ApiConfig")]
+[XmlRoot("FirebaseServiceConfig")]
 public class FirebaseServiceConfig
 {
     [XmlElement("AuthSecret")]
