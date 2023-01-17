@@ -31,7 +31,7 @@ public class FireBaseService : IFireBaseService
         fclient = new FireSharp.FirebaseClient(fconfig);
     }
 
-    public async Task<FirebaseResult> Create(string collection_path, Guid data_Id, Object data_obj)
+    public async Task<FirebaseResult> Create(string collection_path, Guid data_Id, dynamic data_obj)
     {
         SetResponse response = await fclient.SetAsync(collection_path + data_Id, data_obj);
 
@@ -45,21 +45,29 @@ public class FireBaseService : IFireBaseService
 
     public async Task<(FirebaseResult,string?)> Read(string collection_path, Guid data_Id)
     {
-        FirebaseResponse firebaseResponse = await fclient.GetAsync(collection_path + data_Id);
 
-        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() != null)
+        try
         {
-            return (FirebaseResult.Success, firebaseResponse.Body);
+            FirebaseResponse firebaseResponse = await fclient.GetAsync(collection_path + data_Id);
+
+            if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() != null)
+            {
+                return (FirebaseResult.Success, firebaseResponse.Body);
+            }
+            if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() == null)
+            {
+                return (FirebaseResult.NotFound, null);
+            }
         }
-        if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() == null)
+        catch
         {
-            return (FirebaseResult.NotFound, null);
-        } 
+            
+        }
 
         return (FirebaseResult.Error, null);
     }
 
-    public async Task<FirebaseResult> Update(string collection_path, Guid data_id, Object data_obj)
+    public async Task<FirebaseResult> Update(string collection_path, Guid data_id, dynamic data_obj)
     {
         FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() == null)
@@ -77,7 +85,7 @@ public class FireBaseService : IFireBaseService
 
     }
 
-    public async Task<FirebaseResult> Delete(string collection_path, Guid data_id)
+    public async Task<FirebaseResult> Delete(string collection_path, dynamic data_id)
     {
         FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
@@ -93,6 +101,7 @@ public class FireBaseService : IFireBaseService
 
         return FirebaseResult.Error;
     }
+
 }
 
 
