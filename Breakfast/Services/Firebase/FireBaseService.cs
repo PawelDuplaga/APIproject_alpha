@@ -85,7 +85,7 @@ public class FireBaseService : IFireBaseService
 
     }
 
-    public async Task<FirebaseResult> Delete(string collection_path, dynamic data_id)
+    public async Task<FirebaseResult> Delete(string collection_path, Guid data_id)
     {
         FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
