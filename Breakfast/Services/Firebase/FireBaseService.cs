@@ -9,11 +9,12 @@ namespace Breakfast.Services.Firebase;
 
 public class FireBaseService : IFireBaseService
 {
-    IFirebaseConfig fconfig;
-    IFirebaseClient fclient;
+    FirebaseServiceConfig _config;
+    IFirebaseClient _client;
 
     public FireBaseService()
     {
+        _config = XmlConfigReader<FirebaseServiceConfig>.GetConfig(ApiBreakfastConstants.FIREBASE_CONFIG_FILE_PATH);
         ConnectToDatabase();
     }
     
@@ -22,18 +23,20 @@ public class FireBaseService : IFireBaseService
         string json = File.ReadAllText(ApiBreakfastConstants.FIREBASE_CONFIG_FILE_PATH);
         UserConfig config = JsonConvert.DeserializeObject<UserConfig>(json);
 
-        fconfig = new FirebaseConfig
+
+
+        IFirebaseConfig fconfig = new FirebaseConfig
         {
-            AuthSecret= config.AuthSecret,
-            BasePath = config.FirebasePath
+            AuthSecret= _config.AuthSecret,
+            BasePath = _config.BasePath
         };
 
-        fclient = new FireSharp.FirebaseClient(fconfig);
+        _client = new FireSharp.FirebaseClient(fconfig);
     }
 
     public async Task<FirebaseResult> Create(string collection_path, Guid data_Id, dynamic data_obj)
     {
-        SetResponse response = await fclient.SetAsync(collection_path + data_Id, data_obj);
+        SetResponse response = await _client.SetAsync(collection_path + data_Id, data_obj);
 
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
@@ -48,7 +51,7 @@ public class FireBaseService : IFireBaseService
 
         try
         {
-            FirebaseResponse firebaseResponse = await fclient.GetAsync(collection_path + data_Id);
+            FirebaseResponse firebaseResponse = await _client.GetAsync(collection_path + data_Id);
 
             if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() != null)
             {
@@ -69,15 +72,15 @@ public class FireBaseService : IFireBaseService
 
     public async Task<FirebaseResult> Update(string collection_path, Guid data_id, dynamic data_obj)
     {
-        FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
+        FirebaseResponse getResponse = await _client.GetAsync(collection_path + data_id);
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() == null)
         {
-            FirebaseResponse response = await fclient.UpdateAsync(collection_path + data_id, data_obj);
+            FirebaseResponse response = await _client.UpdateAsync(collection_path + data_id, data_obj);
             return FirebaseResult.Success;
         }
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
         {
-            FirebaseResponse response = await fclient.UpdateAsync(collection_path + data_id, data_obj);
+            FirebaseResponse response = await _client.UpdateAsync(collection_path + data_id, data_obj);
             return FirebaseResult.Updated;
         }
         
@@ -87,15 +90,15 @@ public class FireBaseService : IFireBaseService
 
     public async Task<FirebaseResult> Delete(string collection_path, Guid data_id)
     {
-        FirebaseResponse getResponse = await fclient.GetAsync(collection_path + data_id);
+        FirebaseResponse getResponse = await _client.GetAsync(collection_path + data_id);
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() != null)
         {
-            FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
+            FirebaseResponse response = await _client.DeleteAsync(collection_path + data_id);
             return FirebaseResult.Success;
         }
         if(getResponse.StatusCode == System.Net.HttpStatusCode.OK && getResponse.ResultAs<Object>() == null)
         {
-            FirebaseResponse response = await fclient.DeleteAsync(collection_path + data_id);
+            FirebaseResponse response = await _client.DeleteAsync(collection_path + data_id);
             return FirebaseResult.NotFound;
         }
 
