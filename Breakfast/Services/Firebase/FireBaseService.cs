@@ -14,17 +14,17 @@ public class FireBaseService : IFireBaseService
 
     public FireBaseService()
     {
-        _config = XmlConfigReader<FirebaseServiceConfig>.GetConfig(ApiBreakfastConstants.FIREBASE_CONFIG_FILE_PATH);
+        LoadConfig();
         ConnectToDatabase();
     }
     
+    private void LoadConfig(){
+        _config = XmlConfigReader<FirebaseServiceConfig>.GetConfig(ApiBreakfastConstants.FIREBASE_CONFIG_FILE_PATH);
+    }
+
     private void ConnectToDatabase()
     {
-        string json = File.ReadAllText(ApiBreakfastConstants.FIREBASE_CONFIG_FILE_PATH);
-        UserConfig config = JsonConvert.DeserializeObject<UserConfig>(json);
-
-
-
+       {
         IFirebaseConfig fconfig = new FirebaseConfig
         {
             AuthSecret= _config.AuthSecret,
@@ -32,6 +32,7 @@ public class FireBaseService : IFireBaseService
         };
 
         _client = new FireSharp.FirebaseClient(fconfig);
+    }
     }
 
     public async Task<FirebaseResult> Create(string collection_path, Guid data_Id, dynamic data_obj)
