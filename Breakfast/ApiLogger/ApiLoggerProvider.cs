@@ -1,10 +1,17 @@
+using Breakfast.Utils;
+
 namespace Breakfast.ApiLogger;
+
 
 public class ApiLoggerProvider : ILoggerProvider
 {
-    private readonly ApiLoggerConfiguration _config;
+    private readonly ApiLoggerConfig _config;
 
-    public ApiLoggerProvider(ApiLoggerConfiguration config)
+    public ApiLoggerProvider()
+    {
+        _config = XmlConfigReader<ApiLoggerConfig>.GetConfig(ApiBreakfastConstants.APILOGGER_CONFIG_FILE_PATH);
+    }
+    public ApiLoggerProvider(ApiLoggerConfig config)
     {
         _config = config;
     }

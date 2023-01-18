@@ -11,9 +11,9 @@ public class ApiLogger : ILogger
     private readonly ApiLoggerConfig _config;
     private readonly string _className;
 
-    public ApiLogger(string name, ApiLoggerConfiguration config)
+    public ApiLogger(string name, ApiLoggerConfig config)
     {
-        _config = XmlConfigReader<ApiLoggerConfig>.GetConfig("some path");
+        _config = config;
         _name = name;
 
         StackTrace stackTrace = new StackTrace();
@@ -40,7 +40,6 @@ public class ApiLogger : ILogger
     {
         Log(LogLevel.Error, new EventId(eventId, ""), message, exception, formatter);
     }
-
 
 
 
@@ -90,7 +89,5 @@ public class ApiLogger : ILogger
         File.AppendAllText(Path.Combine(_config.LogFolderPath, _className), logMessage + Environment.NewLine);
         Console.WriteLine(logMessage);
     }
-
-    
 
 }

@@ -55,17 +55,18 @@ public class FireBaseService : IFireBaseService
 
             if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() != null)
             {
+                _logger.LogDebug(String.Format("Object with given id [{1}] was found in database", data_Id));
                 return (FirebaseResult.Success, firebaseResponse.Body);
             }
             if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() == null)
             {
+                _logger.LogDebug(String.Format("Object with given id [{1}] was not found in database", data_Id));
                 return (FirebaseResult.NotFound, null);
             }
         }
         catch (Exception ex)
         {
-            _logger.Log(LogLevel.Error, new EventId(501, "FirebaseConnectioError"), new {Error = ex.Message}, ex,
-            (state, exception) => { return $"Unable to connect to Firebase Realtime Database. Error: {state.Error}";});
+            _logger.LogError(ex.Message, exception: ex);
         }
 
         return (FirebaseResult.Error, null);

@@ -9,8 +9,18 @@ public class ApiLoggerConfig
     public LogLevel LogLevel { get; set;}
     
     [XmlElement("EventId")]
-    public EventId EventId { get; set;}
+    public EventIdConfig EventId { get; set;}
 
     [XmlElement("LogFolerPath")]
     public string LogFolderPath { get; set;}
+}
+
+[XmlRoot("EventId")]
+public class EventIdConfig
+{
+    [XmlAttribute("id")]
+    public int Id { get; set; }
+
+    [XmlAttribute("name")]
+    public string Name { get; set; }
 }

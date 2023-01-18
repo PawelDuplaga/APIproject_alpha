@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ApiLoggerConfig>
     <LogLevel>Info</LogLevel>
-    <EventId>0</EventId>
+    <EventId>
+        <id>0</id>
+        <name>default</name>
+    </EventId>
+    <LogFolderPath>F:\dev2\Logs</LogFolderPath>
 </ApiLoggerConfig>
