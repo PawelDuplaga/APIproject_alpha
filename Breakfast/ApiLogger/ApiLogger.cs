@@ -1,17 +1,23 @@
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
+using Breakfast.Utils;
 
 namespace Breakfast.ApiLogger;
 
 public class ApiLogger : ILogger
 {
-    private readonly string _name;
-    private readonly ApiLoggerConfiguration _config;
+    private readonly string _name;  
+    private readonly ApiLoggerConfig _config;
+    private readonly string _className;
 
     public ApiLogger(string name, ApiLoggerConfiguration config)
     {
+        _config = XmlConfigReader<ApiLoggerConfig>.GetConfig("some path");
         _name = name;
-        _config = config;
+
+        StackTrace stackTrace = new StackTrace();
+        _className = stackTrace.GetFrame(1).GetMethod().ReflectedType.Name;
     }
 
     public IDisposable BeginScope<TState>(TState state)
@@ -50,6 +56,7 @@ public class ApiLogger : ILogger
             logMessage += Environment.NewLine + exception.ToString();
         }
 
+        File.AppendAllText(Path.Combine(_config.LogFolderPath, _className), logMessage + Environment.NewLine);
         Console.WriteLine(logMessage);
     }
 }

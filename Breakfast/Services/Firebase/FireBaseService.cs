@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-using Breakfast.Configs;
 using FireSharp.Config;
 using FireSharp.Response;
 using FireSharp.Interfaces;
@@ -11,6 +9,7 @@ public class FireBaseService : IFireBaseService
 {
     FirebaseServiceConfig _config;
     IFirebaseClient _client;
+    ApiLogger.ApiLogger _logger;
 
     public FireBaseService()
     {
@@ -24,7 +23,7 @@ public class FireBaseService : IFireBaseService
 
     private void ConnectToDatabase()
     {
-       {
+       
         IFirebaseConfig fconfig = new FirebaseConfig
         {
             AuthSecret= _config.AuthSecret,
@@ -32,7 +31,7 @@ public class FireBaseService : IFireBaseService
         };
 
         _client = new FireSharp.FirebaseClient(fconfig);
-    }
+        
     }
 
     public async Task<FirebaseResult> Create(string collection_path, Guid data_Id, dynamic data_obj)
@@ -63,9 +62,10 @@ public class FireBaseService : IFireBaseService
                 return (FirebaseResult.NotFound, null);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            
+            _logger.Log(LogLevel.Error, new EventId(501, "FirebaseConnectioError"), new {Error = ex.Message}, ex,
+            (state, exception) => { return $"Unable to connect to Firebase Realtime Database. Error: {state.Error}";});
         }
 
         return (FirebaseResult.Error, null);
