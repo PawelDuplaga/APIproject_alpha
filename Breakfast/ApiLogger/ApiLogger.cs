@@ -20,6 +20,30 @@ public class ApiLogger : ILogger
         _className = stackTrace.GetFrame(1).GetMethod().ReflectedType.Name;
     }
 
+
+    public void LogDebug(string message, int eventId = 0, Exception exception = null, Func<string, Exception, string> formatter = null)
+    {
+        Log(LogLevel.Debug, new EventId(eventId, ""), message, exception, formatter);
+    }
+
+    public void LogInformation(string message, int eventId = 0, Exception exception = null, Func<string, Exception, string> formatter = null)
+    {
+        Log(LogLevel.Information, new EventId(eventId, ""), message, exception, formatter);
+    }
+
+    public void LogWarning(string message, int eventId = 0, Exception exception = null, Func<string, Exception, string> formatter = null)
+    {
+        Log(LogLevel.Warning, new EventId(eventId, ""), message, exception, formatter);
+    }
+
+    public void LogError(string message, int eventId = 0, Exception exception = null, Func<string, Exception, string> formatter = null)
+    {
+        Log(LogLevel.Error, new EventId(eventId, ""), message, exception, formatter);
+    }
+
+
+
+
     public IDisposable BeginScope<TState>(TState state)
     {
         return null;
@@ -30,16 +54,23 @@ public class ApiLogger : ILogger
         return logLevel == _config.LogLevel;
     }
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception = null, Func<TState, Exception, string> formatter = null)
     {
         if (!IsEnabled(logLevel))
         {
             return;
         }
-
         if (_config.EventId == 0 || _config.EventId == eventId.Id)
         {
-            string message = formatter(state, exception);
+            string message;
+            if(formatter != null)
+            {
+                message = formatter(state, exception);
+            }
+            else
+            {
+                message = state.ToString();
+            }
             if (!string.IsNullOrEmpty(message) || exception != null)
             {
                 WriteMessage(logLevel, _name, eventId.Id, message, exception);
@@ -59,4 +90,7 @@ public class ApiLogger : ILogger
         File.AppendAllText(Path.Combine(_config.LogFolderPath, _className), logMessage + Environment.NewLine);
         Console.WriteLine(logMessage);
     }
+
+    
+
 }
