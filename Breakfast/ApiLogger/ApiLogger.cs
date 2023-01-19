@@ -9,15 +9,11 @@ public class ApiLogger : ILogger
 {
     private readonly string _name;  
     private readonly ApiLoggerConfig _config;
-    private readonly string _className;
 
     public ApiLogger(string name, ApiLoggerConfig config)
     {
         _config = config;
         _name = name;
-
-        StackTrace stackTrace = new StackTrace();
-        _className = stackTrace.GetFrame(1).GetMethod().ReflectedType.Name;
     }
 
 
@@ -86,7 +82,9 @@ public class ApiLogger : ILogger
             logMessage += Environment.NewLine + exception.ToString();
         }
 
-        File.AppendAllText(Path.Combine(_config.LogFolderPath, _className), logMessage + Environment.NewLine);
+        File.AppendAllText(Path.Combine(_config.LogFolderPath, name), logMessage + Environment.NewLine);
+        File.AppendAllText(Path.Combine(_config.LogFolderPath, "Logs_all"), logMessage + Environment.NewLine);
+        
         Console.WriteLine(logMessage);
     }
 
