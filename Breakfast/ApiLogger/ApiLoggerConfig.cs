@@ -11,7 +11,7 @@ public class ApiLoggerConfig
     [XmlElement("EventId")]
     public EventIdConfig EventId { get; set;}
 
-    [XmlElement("LogFolerPath")]
+    [XmlElement("LogFolderPath")]
     public string LogFolderPath { get; set;}
 }
 

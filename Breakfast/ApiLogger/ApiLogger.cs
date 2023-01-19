@@ -59,7 +59,7 @@ public class ApiLogger : ILogger
         {
             return;
         }
-        if (_config.EventId == 0 || _config.EventId == eventId.Id)
+        if (_config.EventId.Id == 0 || _config.EventId.Id == eventId.Id)
         {
             string message;
             if(formatter != null)

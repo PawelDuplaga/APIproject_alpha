@@ -1,6 +1,7 @@
 using FireSharp.Config;
 using FireSharp.Response;
 using FireSharp.Interfaces;
+using Breakfast.ApiLogger;
 using Breakfast.Utils;
 
 namespace Breakfast.Services.Firebase;
@@ -9,7 +10,8 @@ public class FireBaseService : IFireBaseService
 {
     FirebaseServiceConfig _config;
     IFirebaseClient _client;
-    ApiLogger.ApiLogger _logger;
+    ILogger _logger;
+    ILoggerProvider _apiLoggerProvider;
 
     public FireBaseService()
     {
@@ -17,7 +19,10 @@ public class FireBaseService : IFireBaseService
         ConnectToDatabase();
     }
     
-    private void LoadConfig(){
+    private void LoadConfig()
+    {
+        _apiLoggerProvider = new ApiLoggerProvider();
+        _logger = _apiLoggerProvider.CreateLogger("FirebaseLogger");
         _config = XmlConfigReader<FirebaseServiceConfig>.GetConfig(ApiBreakfastConstants.FIREBASE_CONFIG_FILE_PATH);
     }
 
@@ -40,6 +45,7 @@ public class FireBaseService : IFireBaseService
 
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            _logger.LogDebug(String.Format("Object with given id [{0}] was created in database", data_Id));
             return FirebaseResult.Success;
         }
 
@@ -55,18 +61,18 @@ public class FireBaseService : IFireBaseService
 
             if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() != null)
             {
-                _logger.LogDebug(String.Format("Object with given id [{1}] was found in database", data_Id));
+                _logger.LogDebug(String.Format("Object with given id [{0}] was found in database", data_Id));
                 return (FirebaseResult.Success, firebaseResponse.Body);
             }
             if(firebaseResponse.StatusCode == System.Net.HttpStatusCode.OK && firebaseResponse.ResultAs<Object>() == null)
             {
-                _logger.LogDebug(String.Format("Object with given id [{1}] was not found in database", data_Id));
+                _logger.LogDebug(String.Format("Object with given id [{0}] was not found in database", data_Id));
                 return (FirebaseResult.NotFound, null);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, exception: ex);
+            _logger.LogError(ex.Message, ex);
         }
 
         return (FirebaseResult.Error, null);

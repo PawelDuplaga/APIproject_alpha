@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FirebaseServiceConfig>
-<BasePath>https://breakfastapi-6e85a-default-rtdb.europe-west1.firebasedatabase.app</BasePath>
-<AuthSecret>ojS09wi2FKqqj8QpmTgSvYrd0L6lfmDU2QUHtXKM</AuthSecret>
+    <BasePath>https://breakfastapi-6e85a-default-rtdb.europe-west1.firebasedatabase.app</BasePath>
+    <AuthSecret>ojS09wi2FKqqj8QpmTgSvYrd0L6lfmDU2QUHtXKM</AuthSecret>
 </FirebaseServiceConfig>
